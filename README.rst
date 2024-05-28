@@ -1,24 +1,26 @@
-alARM-Assembler
+disARM-Assembler
 ###########
-An assembler for the alARM instruction set (for UC Davis ECS 154A, Fall '22)
+An assembler for the disARM instruction set (for UC Davis ECS 154A, SQ24) modified from Noah Krim's alARM assembler.
 
-alARM is a 16-bit ARM-like instruction set with the goal of building a working CPU in the digital logic simulation Logisim-Evolution. Because the instruction memory ROM can only take in hexadecimal machine code, this assembler was created to expedite programming for and testing of the alARM CPU.
+disARM is a 16-bit ARM-like instruction set with the goal of building a working CPU in the digital logic simulation Logisim-Evolution. Because the instruction memory ROM can only take in hexadecimal machine code, this assembler was created to expedite programming for and testing of the disARM CPU.
 
 By default, allows for a relaxed syntax that does not require any special delimiters (commas, brackets, etc.) and will not throw errors if the formally correct syntax is attempted but incomplete in some way. You can set "strict parsing" which requires the formally correct syntax by using the ``-s`` flag.
+
+All the credits to Noah Krim who wrote the original alARM-assembler. It can be found here: https://github.com/nkrim/alARM-assembler.
 
 Installation
 ============
 .. code-block:: console
 
-  $ git clone https://github.com/nkrim/alARM-assembler.git
-  $ cd alARM-assembler
+  $ git clone https://github.com/ritakura/disARM-assembler.git
+  $ cd disARM-assembler
   $ make
   
 Usage
 =====
 .. code-block:: console
 
-  $ ./alarmas src_file out_file [-l] [-s]
+  $ ./disARMas src_file out_file [-l] [-s]
 
 Options
 =======
@@ -223,7 +225,7 @@ Includes five test files:
 - ``teststrict.s`` which includes strictly formatted instructions and should be tested with the ``-s`` flag set.
 - ``teststricterrors.s`` which should intiate an error on every line only when the ``-s`` flag is set.
 - ``testhandencoded.s`` which has some instructions paired up with their hand-encoded hex in the comments, written by Dominic Quintero.
-- ``teststress.s`` which has 65536 instructions, enough to fill alARM instruction memory, so it is good for timing performance.
+- ``teststress.s`` which has 65536 instructions, enough to fill disARM instruction memory, so it is good for timing performance.
 
 Examples
 ==========

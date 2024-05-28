@@ -1,11 +1,12 @@
 /* ************************************************************************* *
- * AUTHOR:      Noah Krim
- * ASSIGNMENT:  Lab 3 - CPU Lab
- * CLASS:       UCD - ECS 154A
+ * PERSON WHO MODIFIED THE CODE: Reina Itakura
+ * Original AUTHOR:      Noah Krim
+ * ASSIGNMENT:  Lab 4 - CPU Lab
+ * CLASS:       UCD - ECS 154A SQ24
  * ------------------------------------------------------------------------- *
- * File: alarmas.cpp
- *  Asssembler that encodes a human-readable alARM program from a `.s` file
- *  into hex machine code that is runnable with an alARM Logisim CPU
+ * File: disarmas.cpp
+ *  Asssembler that encodes a human-readable disARM program from a `.s` file
+ *  into hex machine code that is runnable with an disARM Logisim CPU
  * ************************************************************************* */
 
 #include <iostream>
@@ -35,7 +36,9 @@ using namespace std;
  * Opcode and Bitmask Enums
  * ========================================================================= */
 enum OPCODE : uint16_t {
+    /** NON-ALU Operations (00-0-xxxx) */
     NOP  =0b0000000<<9,
+    RTI  =0b0000001<<9, // NEW in disARM
     HALT =0b0000011<<9,
     MOVRR=0b0000100<<9,
     MOVRF=0b0000110<<9,
@@ -45,6 +48,7 @@ enum OPCODE : uint16_t {
     STRO =0b0001100<<9,
     STR  =0b0001111<<9,
 
+    /* ALU Operations (00-1-xxxx) */
     ADD  =0b0010000<<9,
     SUB  =0b0010001<<9,
     MUL  =0b0010010<<9,
@@ -59,12 +63,12 @@ enum OPCODE : uint16_t {
     LSR  =0b0011011<<9,
     ASR  =0b0011100<<9,
     ROL  =0b0011101<<9,
-    ROR  =0b0011110<<9,
     CMP  =0b0011111<<9,
 
+    /* IMMEDIATE Operations (1-xxx-imm12)*/
     B    =0b0100000<<9,
     BEQ  =0b0110000<<9,
-    BNE  =0b0111000<<9,
+    BCS  =0b0111000<<9, // NEW in disARM
     MOVIM=0b1000000<<9,
 };
 
@@ -167,6 +171,7 @@ const array<fmt_config_t, FMT_LEN> FMT_CONFIG = {{
 
 const map<OPCODE, I_FMT> OPC_TO_FMT = {
     { NOP,  S_TYPE },
+    { RTI,  S_TYPE },
     { HALT, S_TYPE },
     { MOVRR, R2_TYPE },
     { MOVIM, I_TYPE },
@@ -190,15 +195,15 @@ const map<OPCODE, I_FMT> OPC_TO_FMT = {
     { LSR,  R3_TYPE },
     { ASR,  R3_TYPE },
     { ROL,  R3_TYPE },
-    { ROR,  R3_TYPE },
     { CMP,  R2NW_TYPE },
     { B,    B_TYPE },
     { BEQ,  B_TYPE },
-    { BNE,  B_TYPE },
+    { BCS,  B_TYPE },
 };
 
 const map<string, vector<OPCODE>> ISA = {
-    {"NOP",     { NOP }}, 
+    {"NOP",     { NOP }},
+    {"RTI",     { RTI }}, 
     {"HALT",    { HALT }},
     {"MOV",     { MOVRR, MOVRF, MOVFR, MOVIM }},
     {"LDR",     { LDR, LDRO }},
@@ -216,12 +221,11 @@ const map<string, vector<OPCODE>> ISA = {
     {"LSL",     { LSL }},  
     {"LSR",     { LSR }},  
     {"ASR",     { ASR }},  
-    {"ROL",     { ROL }},  
-    {"ROR",     { ROR }},  
+    {"ROL",     { ROL }},    
     {"CMP",     { CMP }},  
     {"B",       { B }},    
     {"BEQ",     { BEQ }},    
-    {"BNE",     { BNE }},
+    {"BCS",     { BCS }},
 };
 
 const array<regex,FMT_LEN> FMT_REGEX = {{
