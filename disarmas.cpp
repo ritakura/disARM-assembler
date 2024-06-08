@@ -1061,7 +1061,7 @@ bool get_options(int argc, char** argv, prog_opts_s& opts) {
 
 // prints the help message upon failure to run
 void print_help() {
-    cerr << "USAGE:  alarmas <source file> <object file> [-l] [-s]" << endl
+    cerr << "USAGE:  disarmas <source file> <object file> [-l] [-s]" << endl
          << "        -l : print listing to standard error" << endl
          << "        -s : strict parsing forces correct syntax" << endl;
 }
