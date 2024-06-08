@@ -777,6 +777,15 @@ bool parse_program(ifstream& fin, prog_s& prog, bool strict_parsing) {
                          << endl;
                     return false;
                 }
+
+                if (origin < progsize) {
+                    cerr << "Error: line[" << file_line
+                         << "]: origin must be ahead of current address"
+                         << " ["
+                         << progsize << "]."
+                         << endl;
+                    return false;
+                }
                 
                 for (int i = 0; i < origin - progsize; i++) {
                     prog.insts.emplace_back(NOP, (inst_tokens_t) {"NOP"});

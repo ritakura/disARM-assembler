@@ -6,7 +6,7 @@ disARM is a 16-bit ARM-like instruction set with the goal of building a working 
 
 By default, allows for a relaxed syntax that does not require any special delimiters (commas, brackets, etc.) and will not throw errors if the formally correct syntax is attempted but incomplete in some way. You can set "strict parsing" which requires the formally correct syntax by using the ``-s`` flag.
 
-All the credits to Noah Krim who wrote the original alARM-assembler. It can be found here: https://github.com/nkrim/alARM-assembler.
+All the credits to Noah Krim who wrote the original alARM-assembler. It can be found here: https://github.com/nkrim/alARM-assembler. Cool guy, check him out.
 
 Installation
 ============
@@ -34,13 +34,11 @@ Flag    Description
 Feature Additions
 ==========
 - 11/30/22 5:00pm - added ``CLC`` psuedo-instruction for clearing the carry flag (gets replaced with ``AND R0, R0, R0``).
+- 6/8/24  12:05am - added ``ORIGIN`` psuedo-instruction to add ``NOP`` buffers until desired memory address (gets replaced with many ``NOP``s). Does not work if you set ORIGIN to an address lower than current address.
 
 Bug Fixes
 ==========
-- 11/17/22 9:30pm - fixed a bug that was causing every operand token to display as mnemonic instead in encoder errors.
-- 11/19/22 8:30pm - fixed ``CMP`` encoding to use Rn and Rm spaces instead of Rd and Rn.
-- 11/20/22 6:45pm - fixed ``MOV Flags, Rn`` encoding to use Rn instead of Rd.
-- 11/29/22 4:00pm - fixed negative immediate parsing for in strict mode.
+- Reina's roommates called Pest Control on the cockaroaches on 6/8/24.
 
 ISA
 ==========
