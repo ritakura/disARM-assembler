@@ -877,7 +877,6 @@ bool encode_program(prog_s& prog) {
                     parse_success = true;
                     parse_label = true;
                     parsed = prog.label_lookup[opr_str_key] - (i+1LL);
-                    cout << parsed << endl;
                 }
                 // try to parse as decimal
                 else if(regex_match(opr_str, num_m, dec_re)) {
