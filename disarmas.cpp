@@ -48,6 +48,9 @@ enum OPCODE : uint16_t {
     STRO =0b0001100<<9,
     STR  =0b0001111<<9,
 
+    /** ORIGIN (not an actual instruction) */
+   ORIGIN=0b0000010<<0,
+
     /* ALU Operations (00-1-xxxx) */
     ADD  =0b0010000<<9,
     SUB  =0b0010001<<9,
@@ -199,6 +202,7 @@ const map<OPCODE, I_FMT> OPC_TO_FMT = {
     { B,    B_TYPE },
     { BEQ,  B_TYPE },
     { BCS,  B_TYPE },
+    { ORIGIN, B_TYPE},
 };
 
 const map<string, vector<OPCODE>> ISA = {
@@ -226,6 +230,7 @@ const map<string, vector<OPCODE>> ISA = {
     {"B",       { B }},    
     {"BEQ",     { BEQ }},    
     {"BCS",     { BCS }},
+    {"ORIGIN",  { ORIGIN }},
 };
 
 const array<regex,FMT_LEN> FMT_REGEX = {{
@@ -716,9 +721,78 @@ bool parse_program(ifstream& fin, prog_s& prog, bool strict_parsing) {
 
             // push onto instruction list
             // -------------------------------------------------------------
-            prog.insts.emplace_back(inst_opcode, inst_buf);
-            prog.insts_raw.push_back(inst_raw_buf);
-            prog.debug_line_nums.push_back(file_line);
+            /** Edited for ORIGIN (might not work with labels) */
+            
+            if (mne == "ORIGIN") {
+                int progsize = prog.insts.size();
+                int origin;
+                bool origin_success;
+                string& oaddress = inst_buf[1];
+                smatch num_o;
+
+                // try to parse as decimal
+                if(regex_match(oaddress, num_o, dec_re)) {
+                    origin_success = true;
+                    origin = strtoll(num_o[1].str().c_str(), nullptr, 10);
+                }
+                // try to parse as hex
+                else if(regex_match(oaddress, num_o, hex_re)) {
+                    origin_success = true;
+                    origin = strtoll(num_o[1].str().c_str(), nullptr, 16);
+                    if(num_o[1].length() > 4) {
+                        cerr << "Error: line[" << file_line
+                             << "]: hex value has too many nibbles ("
+                             << "max = " << 4 << ")." 
+                             << endl;
+                        return false;
+                    }
+                }
+                // try to parse as binary
+                else if(regex_match(oaddress, num_o, bin_re)) {
+                    origin_success = true;
+                    origin = strtoll(num_o[1].str().c_str(), nullptr, 2);
+                    // error: too many bits
+                    if(num_o[1].length() > 16) {
+                        cerr << "Error: line[" << file_line
+                             << "]: binary value has too many bits ("
+                             << "max = " << 16 << ")." 
+                             << endl;
+                        return false;
+                    }
+                }
+
+                // error: could not encode immediate
+                if(!origin_success) {
+                    cerr << "Error: line[" << file_line
+                         << "]: expected immediate value."
+                         << endl;
+                    return false;
+                }
+                // error: out of bounds immediate
+                if(origin < 0 || origin > 65535) {
+                    cerr << "Error: line[" << file_line
+                         << "]: immediate value "
+                         << "out of range ["
+                         << 0 << ", " << 65535 << "]."
+                         << endl;
+                    return false;
+                }
+                
+                for (int i = 0; i < origin - progsize; i++) {
+                    prog.insts.emplace_back(NOP, (inst_tokens_t) {"NOP"});
+                    if (i == 0) {
+                        prog.insts_raw.push_back(inst_raw_buf);
+                    } else {
+                        prog.insts_raw.push_back((inst_tokens_t) {});
+                    }
+                    prog.debug_line_nums.push_back(file_line);
+                }
+            } else {
+                prog.insts.emplace_back(inst_opcode, inst_buf);
+                prog.insts_raw.push_back(inst_raw_buf);
+                prog.debug_line_nums.push_back(file_line);
+            }
+            /** SORRY FOR MESSING UP UR BEAUTIFUL CODE NOAH */
 
             // error: instruction overflow
             if(prog.insts.size() > MAX_INST) {
@@ -803,6 +877,7 @@ bool encode_program(prog_s& prog) {
                     parse_success = true;
                     parse_label = true;
                     parsed = prog.label_lookup[opr_str_key] - (i+1LL);
+                    cout << parsed << endl;
                 }
                 // try to parse as decimal
                 else if(regex_match(opr_str, num_m, dec_re)) {
@@ -1077,7 +1152,7 @@ string str_to_upper(const string& str) {
 // trims whitespace from head of string
 string& trim_head(string& str) {
     int i = 0;
-    while(i<str.size() && isspace(str[i]))
+    while(i<(int)str.size() && isspace(str[i]))
         i++;
     str = str.substr(i);
     return str;
