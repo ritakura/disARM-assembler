@@ -33,8 +33,7 @@ Flag    Description
 
 Feature Additions
 ==========
-- 11/30/22 5:00pm - added ``CLC`` psuedo-instruction for clearing the carry flag (gets replaced with ``AND R0, R0, R0``).
-- 6/8/24  12:05am - added ``ORIGIN`` psuedo-instruction to add ``NOP`` buffers until desired memory address (gets replaced with many ``NOP``s). Does not work if you set ORIGIN to an address lower than current address.
+- 6/8/24  12:05am - added ``ORIGIN`` psuedo-instruction to add ``NOP`` buffers until desired memory address (gets replaced with many ``NOP``s). Does not work if you set ORIGIN to an address lower than current address. It's also implemented rather poorly, it uses opcode 000-0010 for no reason, and does not utilize Noah's pseudo instruction structure. But it does work... I hope to re-implement it in a much cleaner way.
 
 Bug Fixes
 ==========
@@ -56,7 +55,9 @@ Registers and Memory
    * - **Data Memory**
      - 64K of word-addressable data memory for 16-bit data words (top 2K words are reserved for IO)
    * - **Display IO**
-     - Data address 0xFFFF reserved for printing a value on the front panel display
+     - Data address 0xFFFF reserved for printing a value on the front panel display1
+     - Data address 0xFFFE reserved for printing a value on the front panel display2
+
 
 Status Register
 ----------
@@ -90,6 +91,9 @@ Non-ALU Operations
    * - ``NOP``
      -
      - No operation
+   * - ``RTI``
+     -
+     - Return from interrupt
    * - ``HALT``
      -
      - Halts program counter, terminating program
@@ -208,7 +212,9 @@ Psuedo-Instructions and Aliases
    * - ``CLC``
      - ``AND R0, R0, R0``
      - "Clear Carry", used to avoid the implicit carry-in to the ALU for ADD and SUB operations
-
+   * - ``ORIGIN [imm]``
+     - ``NOP`` x(imm-current address)
+     - "Origin", used to add buffers of ``NOP`` to start the next instruction at address [imm] in the instruction memory.
 Notes
 ---------
 - All operations are signed operations, unless otherwise specified.
@@ -216,7 +222,7 @@ Notes
 
 Tests
 ==========
-Includes five test files: 
+Includes five test files, none of which are modified for disARMas. They are all alARMas test files: 
 
 - ``testinsts.s`` which includes every instruction in every format in order to ensure proper encoding.
 - ``testerrors.s`` which should initiate an error on every line of the program, so it starts entirely commented in order to test for specific errors.
