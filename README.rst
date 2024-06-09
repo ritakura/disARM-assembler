@@ -212,9 +212,9 @@ Psuedo-Instructions and Aliases
    * - ``CLC``
      - ``AND R0, R0, R0``
      - "Clear Carry", used to avoid the implicit carry-in to the ALU for ADD and SUB operations
-   * - ``ORIGIN [imm]``
-     - ``NOP`` x(imm-current address)
-     - "Origin", used to add buffers of ``NOP`` to start the next instruction at address [imm] in the instruction memory.
+   * - ``ORIGIN Imm``
+     - ``NOP`` buffers
+     - "Origin", used to add buffers of ``NOP`` to start the next instruction at address ``Imm`` in the instruction memory.
 Notes
 ---------
 - All operations are signed operations, unless otherwise specified.
