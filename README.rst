@@ -2,7 +2,7 @@ disARM-Assembler
 ###########
 An assembler for the disARM instruction set (for UC Davis ECS 154A, SQ24) modified from Noah Krim's alARM assembler.
 
-disARM is a 16-bit ARM-like instruction set with the goal of building a working CPU in the digital logic simulation Logisim-Evolution. Because the instruction memory ROM can only take in hexadecimal machine code, this assembler was created to expedite programming for and testing of the disARM CPU.
+disARM is a 16-bit ARM-like instruction set with the goal of building a working CPU in the digital logic simulation Logisim-Evolution v3.8.0. Because the instruction memory ROM can only take in hexadecimal machine code, this assembler was created to expedite programming for and testing of the disARM CPU.
 
 By default, allows for a relaxed syntax that does not require any special delimiters (commas, brackets, etc.) and will not throw errors if the formally correct syntax is attempted but incomplete in some way. You can set "strict parsing" which requires the formally correct syntax by using the ``-s`` flag.
 
